@@ -3,17 +3,17 @@ import { TextInput, View, StyleSheet } from "react-native";
 
 const CustomTextInput = ({
   text,
-  onChange,
+  onChangeText,
   multiline = false,
   placeholder,
   numberOfLines,
 }) => (
-  <View style={styles.container}>
+  <View style={(styles.container, styles.input)}>
     <TextInput
       multiline={multiline}
       numberOfLines={numberOfLines}
       defaultValue={text}
-      onChange={onChange}
+      onChangeText={onChangeText}
       placeholder={placeholder}
     />
   </View>
@@ -24,9 +24,10 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#DDDDDD",
     padding: 10,
+    marginTop: 50,
   },
   container: {
-    marginTop: 50,
+    marginTop: 100,
   },
 });
 

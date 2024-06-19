@@ -1,26 +1,78 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
+import axios from "axios";
+import { BASE_URL, API_KEY } from "../constant";
 
-const WeatherInfo = () => {
+const WeatherInfo = ({ city }) => {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!city) return;
+
+    const fetchWeather = async () => {
+      try {
+        const response = await axios.get(
+          `${BASE_URL}?q=${city}&appid=${API_KEY}`,
+        );
+        setData(response.data);
+        setError(null);
+      } catch (err) {
+        setData(null);
+        setError(err.message);
+      }
+    };
+
+    fetchWeather();
+  }, [city]);
+
+  if (error) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Data Not Found</Text>
+      </View>
+    );
+  }
+
+  if (!data) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>Data Not Found</Text>
+      </View>
+    );
+  }
+
+  const temperatureCelsius = (data.main.temp - 273.15).toFixed(2);
+  const visibilityKm = (data.visibility / 1000).toFixed(2);
+  const weatherDescription = data.weather[0].description;
+  const weatherIcon = data.weather[0].icon;
+  const windSpeed = data.wind.speed;
+
   return (
     <View style={styles.marginTop20}>
-      <Text style={styles.text}>The Weather Of Jakarta</Text>
-      <Text style={[styles.temperature, styles.marginTop20]}>15 C</Text>
+      <Text style={styles.text}>The Weather Of {data.name}</Text>
+      <Text style={[styles.temperature, styles.marginTop20]}>
+        {temperatureCelsius}°C
+      </Text>
       <View style={[styles.rowContainer, styles.marginTop20]}>
         <Image
-          source={{ uri: "https://openweathermap.org/img/w/04d.png" }}
+          source={{
+            uri: `https://openweathermap.org/img/w/${weatherIcon}.png`,
+          }}
           style={styles.weatherIcon}
         />
-        <Text style={[styles.text, styles.bold]}>Clouds</Text>
+        <Text style={[styles.text, styles.bold]}>{data.weather[0].main}</Text>
       </View>
-      <Text style={styles.text}>overcast clouds</Text>
+      <Text style={styles.text}>{weatherDescription}</Text>
       <View style={[styles.rowContainer, styles.marginTop20]}>
         <Text style={[styles.text, styles.bold]}>Visibility :</Text>
-        <Text style={[styles.text, styles.marginLeft15]}>10 km</Text>
+        <Text style={[styles.text, styles.marginLeft15]}>
+          {visibilityKm} KM
+        </Text>
       </View>
       <View style={[styles.rowContainer, styles.marginTop20]}>
         <Text style={[styles.text, styles.bold]}>Wind Speed :</Text>
-        <Text style={[styles.text, styles.marginLeft15]}>10 m/s</Text>
+        <Text style={[styles.text, styles.marginLeft15]}>{windSpeed} m/s</Text>
       </View>
     </View>
   );
@@ -53,6 +105,11 @@ const styles = StyleSheet.create({
   weatherIcon: {
     width: 50,
     height: 50,
+  },
+  loadingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
   },
 });
 

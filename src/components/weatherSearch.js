@@ -1,19 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Button, StyleSheet } from "react-native";
 import CustomTextInput from "./customTextInput";
 
-const WeatherSearch = () => {
+const WeatherSearch = ({ kota }) => {
+  const [city, setCity] = useState("");
+
   return (
     <View>
       <CustomTextInput
         placeholder="Search the weather of your city"
         numberOfLines={1}
+        onChangeText={setCity}
       />
       <View style={styles.buttonWrapper}>
         <Button
           title="Search"
           onPress={() => {
-            console.log("test");
+            kota(city);
           }}
         />
       </View>
